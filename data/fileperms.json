@@ -1,0 +1,16 @@
+[
+  {
+    "filename": "/boot/gryb/grub.conf",
+    "comment": "Ensure ownership of bootloader config /boot/grub/grub.conf",
+    "mode": "600",
+    "uid": "0",
+    "gid": "0"
+  },
+  {
+    "filename": "/etc/hosts.allow",
+    "comment": "Verify Permissions on /etc/hosts.allow",
+    "mode": "644",
+    "uid": "0",
+    "gid": "0"
+  }
+]

@@ -1,0 +1,69 @@
+#+Title: cfengine-fileperms
+
+This policy serves as a use-able example for enforcing file permissions with
+CFEngine using external data. This model is a useful reference or starting point
+for building your own compliance policies.
+
+This policy will use data provided in [[=data/fileperms.json=]] to ensure standard
+Unix file permissions and ownership for the specified files. Note: If the
+specified file does not exist this policy skips the check and it is not treated
+as an error.
+
+* Configuration
+:PROPERTIES:
+:ID:       77a1f74d-9afc-41a2-bb91-c59f874766f5
+:END:
+
+Edit [[file:data/fileperms.json][=data/fileperms.json=]] according to your compliance needs.
+
+Ensure the augments file (=def.json=) in the root of your masterfiles contains
+the following.
+
+#+BEGIN_SRC json
+  {
+    "inputs": [ "services/fileperms/fileperms.cf" ],
+    "classes": { "services_autorun": [ "any" ] }
+  }
+#+END_SRC
+
+Run ~make install~.
+
+* Reporting                                                          :ATTACH:
+:PROPERTIES:
+:ID:       49d911e4-dbab-4f8a-83ca-c3475e456385
+:Attachments: 2016-11-10_Selection_004_2016-11-10_15-27-40.png 2016-11-10_Selection_005_2016-11-10_15-31-26.png 2016-11-10_Selection_006_2016-11-10_15-58-47.png 2016-11-10_Selection_007_2016-11-10_16-11-17.png
+:END:
+
+** Report on current state
+:PROPERTIES:
+:ID:       f464c0e8-d907-4934-8e47-1440f1243b61
+:END:
+
+Report on the current state for all promises where =Compliance:fileperms= is the
+promisee.
+
+#+BEGIN_SRC sql
+  SELECT Hosts.HostName AS "Host name", PromiseExecutions.Promiser AS "Promiser",
+  PromiseExecutions.PromiseOutcome AS "Promise outcome",
+  PromiseExecutions.Promisees AS "Promisees", PromiseExecutions.LogMessages AS
+  "Log messages", PromiseExecutions.ChangeTimeStamp AS "Change time" FROM
+  PromiseExecutions INNER JOIN Hosts ON Hosts.HostKey = PromiseExecutions.HostKey
+  WHERE 'Compliance:fileperms'=ANY(PromiseExecutions.Promisees)
+#+END_SRC
+
+#+DOWNLOADED: /home/nickanderson/Pictures/Screenshots/2016-11-10_Selection_007.png @ 2016-11-10 16:11:17
+[[file:data/49/d911e4-dbab-4f8a-83ca-c3475e456385/2016-11-10_Selection_007_2016-11-10_16-11-17.png]]
+
+** Report on changes over time
+:PROPERTIES:
+:ID:       17a0d1da-e552-4ce1-8ecb-5241897b0804
+:END:
+
+Report on the Changes over a period of time using the Changes reporting
+interface.
+
+Navigate to =Reports -> Changes=.
+Add a =Filter= where =Promisees is Compliance:fileperms=.
+
+#+DOWNLOADED: /home/nickanderson/Pictures/Screenshots/2016-11-10_Selection_006.png @ 2016-11-10 15:58:47
+[[file:data/49/d911e4-dbab-4f8a-83ca-c3475e456385/2016-11-10_Selection_006_2016-11-10_15-58-47.png]]

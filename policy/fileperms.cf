@@ -1,0 +1,39 @@
+body file control
+{
+  inputs => { "$(sys.libdir)/stdlib.cf"};
+}
+
+bundle agent fileperms
+# @brief Enforce file permission compliance of specific files.
+{
+  meta:
+    "tags" slist => { "autorun" };
+
+  vars:
+      # Define a the location where the data file exists.
+      "data_file" string => "$(this.promise_dirname)/data/$(this.bundle).json";
+
+      "rules" data => readjson( $(data_file), inf );
+      "idx"  slist => getindices( rules );
+
+  files:
+
+      # Here we promise that each file identified by the `filename` key in the
+      # data has the appropriate permissions as identified by `mode`, `uid`, and
+      # `gid` respectively.
+
+      "$(rules[$(idx)][filename])" -> { "Compliance:fileperms", "$(rules[$(idx)][comment])" }
+        perms => mog( "$(rules[$(idx)][mode])", "$(rules[$(idx)][uid])", "$(rules[$(idx)][gid])" ),
+        classes => results( "bundle", "fileperms_$(rules[$(idx)][filename])" ),
+        if => fileexists( "$(rules[$(idx)][filename])" );
+
+  vars:
+    "DEBUG|DEBUG_$(this.bundle)"::
+
+      "classes" slist => classesmatching("fileperms_.*");
+
+  reports:
+    "DEBUG|DEBUG_$(this.bundle)"::
+      "$(rules[$(idx)][filename])";
+      "FILEPERMS class $(classes)";
+}
